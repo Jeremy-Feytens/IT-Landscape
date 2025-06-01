@@ -15,17 +15,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Log in to Github Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
       # 2. Build the Docker image
       - name: Build Docker image
         run: |
           docker build \
             --file Dockerfile \
-            --tag my-flask-app:${{ github.sha }} \
+            --tag ghcr.io/${{ github.repository_owner }}/my-flask-app:${{ github.sha }} \
             .
+
+      # 4. Push the Docker image to GitHub Packages (ghcr.io)
+      - name: Push Docker image to GitHub Packages
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/my-flask-app:${{ github.sha }}
 
       # 3. Save the built image to a tarball
       - name: Save Docker image to tarball
-        run: docker save my-flask-app:${{ github.sha }} -o image.tar
+        run: docker save ghcr.io/${{ github.repository_owner }}/my-flask-app:${{ github.sha }} -o image.tar
 
       # 4. Upload the tarball as an artifact
       - name: Upload Docker image artifact
