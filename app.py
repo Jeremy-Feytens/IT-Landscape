@@ -26,7 +26,6 @@ for epoch in range(1, num_epochs + 1):
         w, b = model[0].weight.item(), model[0].bias.item()
         print(f"Epoch {epoch:2d}: loss={loss.item():.4f},  weight={w:.3f}, bias={b:.3f}")
 
-# 5. Test on a new value
 test_x = torch.tensor([[4.0]])
 pred_y = model(test_x)
 print(f"\nModel prediction: for x=4.0 → y≈{pred_y.item():.3f} (true y=9.0)")
