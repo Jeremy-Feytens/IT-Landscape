@@ -1,0 +1,35 @@
+name: CI · Build Docker Image
+
+# Only run if one of these files changes
+on:
+  push:
+    branches:
+        - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Build the Docker image
+      - name: Build Docker image
+        run: |
+          docker build \
+            --file Dockerfile \
+            --tag my-flask-app:${{ github.sha }} \
+            .
+
+      # 3. Save the built image to a tarball
+      - name: Save Docker image to tarball
+        run: docker save my-flask-app:${{ github.sha }} -o image.tar
+
+      # 4. Upload the tarball as an artifact
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-tar
+          path: image.tar
